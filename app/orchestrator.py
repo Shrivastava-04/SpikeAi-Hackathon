@@ -84,6 +84,23 @@ class Orchestrator:
                     "details": str(e)
                 }
 
+        if any(k in q for k in ["indexable", "indexability", "technical seo", "seo health"]):
+            try:
+                df = self.seo_agent.load_worksheet("internal_all")
+                results = self.seo_agent.analyze_indexability(df)
+                explanation = self.seo_agent.explain_indexability(results)
+
+                return {
+                    "agent": "seo_indexability",
+                    "results": results,
+                    "summary": explanation
+                }
+            except Exception as e:
+                return {
+                    "error": "Failed to process indexability SEO query",
+                    "details": str(e)
+                }
+
         # ---------------------------
         # Fallback
         # ---------------------------

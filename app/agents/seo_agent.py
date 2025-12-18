@@ -192,3 +192,75 @@ class SEOAgent:
             )
 
         return " ".join(explanation)
+
+
+    def analyze_indexability(self, df):
+        results = {}
+
+        total_pages = len(df)
+        results["total_pages"] = total_pages
+
+        # Required columns
+        status_code_col = "Status Code"
+        status_col = "Status"
+        meta_robots_col = "Meta Robots 1"
+        xrobots_col = "X-Robots-Tag 1"
+        canonical_col = "Canonical Link Element 1"
+        redirect_col = "Redirect URL"
+
+        for col in [status_code_col, status_col]:
+            if col not in df.columns:
+                return {"error": f"Required column missing: {col}"}
+
+        # Normalize text columns
+        for col in [meta_robots_col, xrobots_col, canonical_col, redirect_col]:
+            if col in df.columns:
+                df[col] = df[col].fillna("").astype(str).str.lower()
+
+        # Convert status code
+        df[status_code_col] = pd.to_numeric(df[status_code_col], errors="coerce")
+
+        indexable_mask = (
+            (df[status_code_col] == 200) &
+            (~df[status_col].str.contains("blocked", case=False, na=False)) &
+            (~df[meta_robots_col].str.contains("noindex", na=False)) &
+            (~df[xrobots_col].str.contains("noindex", na=False)) &
+            (df[redirect_col] == "") &
+            ((df[canonical_col] == "") | (df[canonical_col] == df["Address"]))
+        )
+
+        indexable_count = int(indexable_mask.sum())
+        non_indexable_count = total_pages - indexable_count
+
+        results["indexable_pages"] = indexable_count
+        results["non_indexable_pages"] = non_indexable_count
+
+        if total_pages > 0:
+            percentage = round((indexable_count / total_pages) * 100, 2)
+        else:
+            percentage = 0.0
+
+        results["indexable_percentage"] = percentage
+
+        # SEO health assessment
+        if percentage >= 80:
+            health = "Good"
+        elif percentage >= 50:
+            health = "Average"
+        else:
+            health = "Poor"
+
+        results["technical_seo_health"] = health
+
+        return results
+
+
+    def explain_indexability(self, results):
+        if "error" in results:
+            return results["error"]
+
+        return (
+            f"{results['indexable_percentage']}% of pages are indexable. "
+            f"This indicates {results['technical_seo_health'].lower()} technical SEO health. "
+            f"Indexable pages are eligible to appear in search engine results."
+        )
