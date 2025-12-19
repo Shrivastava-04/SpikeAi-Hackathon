@@ -3,12 +3,26 @@ set -e
 
 echo "Starting deployment..."
 
-python -m venv .venv || true
-source .venv/bin/activate
+# Create virtual environment at root if it does not exist
+if [ ! -d ".venv" ]; then
+  echo "Creating virtual environment..."
+  python -m venv .venv
+fi
 
-pip install --upgrade pip
+# Activate virtual environment (Linux & Windows Git Bash)
+if [ -f ".venv/bin/activate" ]; then
+  source .venv/bin/activate
+elif [ -f ".venv/Scripts/activate" ]; then
+  source .venv/Scripts/activate
+else
+  echo "Virtual environment activation script not found"
+  exit 1
+fi
+
+echo "Installing dependencies..."
 pip install -r requirements.txt
 
 echo "Starting server on port 8080..."
-python -m uvicorn app.main:app --host 0.0.0.0 --port 8080
+nohup uvicorn app.main:app --host 0.0.0.0 --port 8080 > server.log 2>&1 &
 
+echo "Deployment complete."
