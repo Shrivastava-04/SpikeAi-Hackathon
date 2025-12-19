@@ -1,5 +1,6 @@
 import json
 import re
+import os
 from openai import OpenAI
 from app.agents.llm_prompt import SEO_SYSTEM_PROMPT, SYSTEM_PROMPT
 from app.agents.seo_plan import SEOExecutionPlan
@@ -7,8 +8,8 @@ from app.agents.seo_plan import SEOExecutionPlan
 class LLMClient:
     def __init__(self):
         self.client = OpenAI(
-            api_key = "sk-eZBzkrbcflq8m2iss0jV8w",
-            base_url = "http://3.110.18.218/v1"
+            api_key =os.getenv("LLM_API_KEY"),
+            base_url = os.getenv("LLM_BASE_URL")
         )
 
     def _extract_json(self, text: str) -> dict:

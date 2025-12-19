@@ -1,11 +1,12 @@
 from google.oauth2 import service_account
 from googleapiclient.discovery import build
 import pandas as pd
+import os
 
 
 class SEOAgent:
     def __init__(self):
-        self.sheet_id = "1zzf4ax_H2WiTBVrJigGjF2Q3Yz-qy2qMCbAMKvl6VEE"
+        self.sheet_id = os.getenv("SEO_AGENT_SHEET_ID")
         self.credentials_file = "credentials.json"
 
         self.scopes = ["https://www.googleapis.com/auth/spreadsheets.readonly"]

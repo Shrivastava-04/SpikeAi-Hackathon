@@ -1,3 +1,4 @@
+import os
 from google.analytics.data_v1beta import BetaAnalyticsDataClient
 from google.analytics.data_v1beta.types import (
     DateRange,
@@ -8,7 +9,7 @@ from google.analytics.data_v1beta.types import (
 from google.oauth2 import service_account
 
 # 👉 PASTE YOUR GA4 PROPERTY ID HERE (numbers only)
-PROPERTY_ID = "<Your_GA4_PROPERTY_ID>"
+PROPERTY_ID = os.getenv("GA4_PROPERTY_ID")
 
 # Load credentials from credentials.json
 credentials = service_account.Credentials.from_service_account_file(

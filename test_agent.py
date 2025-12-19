@@ -1,6 +1,7 @@
 from app.agents.analytics_agent import AnalyticsAgent
+import os
 
-Property_ID = "<Your_GA4_PROPERTY_ID>"
+Property_ID = os.getenv("GA4_PROPERTY_ID")
 
 
 agent = AnalyticsAgent()
