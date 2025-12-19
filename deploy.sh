@@ -19,6 +19,7 @@ else
   exit 1
 fi
 
+# Install dependencies
 echo "Installing dependencies..."
 pip install -r requirements.txt
 
