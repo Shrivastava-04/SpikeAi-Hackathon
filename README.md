@@ -263,8 +263,3 @@ Built specifically to meet and exceed the **Spike AI BuildX Hackathon** requirem
 
 **Harshit Shrivastava**  
 Spike AI BuildX Hackathon Participant
-
-```
-
----
-```
