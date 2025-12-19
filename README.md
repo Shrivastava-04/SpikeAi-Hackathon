@@ -1,106 +1,270 @@
-# 🚀 Spike AI BuildX Hackathon: Analytics & SEO Intelligence Backend
+# 🚀 Spike AI BuildX Hackathon
 
-A robust **Python-based backend system** that unifies **GA4 analytics** and **technical SEO intelligence** into a single, intelligent API. Built with an agent-based architecture, it bridges the gap between natural language intent and deterministic data execution.
+## Analytics & SEO Intelligence Backend
+
+A **Python-based backend system** built for the **Spike AI BuildX Hackathon** that answers **GA4 analytics** and **technical SEO questions** through a **single unified API**.
+
+The system uses an **agent-based architecture**, combining **deterministic execution** with **LLM-assisted query planning** to ensure **accuracy, safety, and explainability**.
 
 ---
 
-## 🧠 System Overview
+## 🧠 What This Project Does
 
-This backend exposes a single endpoint `POST /query` that intelligently routes requests to specialized agents. By combining **LLM-assisted query planning** with **deterministic execution**, the system ensures 100% accuracy based on real datasets—eliminating the risk of LLM hallucinations.
+This backend exposes a single API endpoint:
 
-### 🏗️ Architecture Flow
+```
+POST /query
+```
 
-```mermaid
-graph TD
-    A[POST /query] --> B{Orchestrator}
-    B -->|propertyId present| C[GA4 Analytics Agent]
-    B -->|SEO Query| D[SEO Intelligence Suite]
-    D --> E[Accessibility Agent - WCAG]
-    D --> F[Response Codes Agent - Health]
-    D --> G[Indexability Agent - Technical SEO]
-    C & E & F & G --> H[Human-Readable Insights + Structured Data]
-✨ Key Features
-📊 Tier 1: GA4 Analytics Agent
-Engine: Uses Google Analytics Data API.
+It intelligently routes natural language questions to:
 
-Function: Converts natural language into structured GA4 query plans.
+- **GA4 Analytics Agent** (when `propertyId` is provided)
+- **SEO Intelligence Agents** (using real Screaming Frog Google Sheets data)
 
-Metrics: Active users, sessions, events, and pageviews.
+✅ All answers are computed from **real datasets only**  
+🚫 No hallucinated or fabricated insights
 
-Reliability: Handles empty/low-traffic properties gracefully with clear error states.
+---
 
-🔍 Tier 2: SEO Intelligence (Screaming Frog Data)
-Derived from real crawl data stored in Google Sheets:
+## ✨ Key Features
 
-Accessibility (WCAG) Agent: Detects WCAG 2.2 AA violations, computes compliance risk, and summarizes fixes.
+### 🔹 Tier 1 — GA4 Analytics Agent
 
-Crawl Health Agent: Classifies URLs (200, 3xx, 4xx, 5xx), identifies robots.txt blocks, and evaluates technical risks.
+- Uses **Google Analytics Data API**
+- Converts natural language questions into **structured GA4 query plans**
+- Supports metrics such as:
+  - Active users
+  - Sessions
+  - Events
+  - Pageviews
+- Handles:
+  - Empty GA4 responses
+  - Low-traffic properties
+- Returns:
+  - Structured analytics output
+  - Human-readable explanation
 
-Indexability Agent: Analyzes Meta Robots and X-Robots-Tag to compute indexability percentages and overall SEO health (Good/Average/Poor).
+---
 
-📡 API Usage
-Endpoint: POST /query
+### 🔹 Tier 2 — SEO Intelligence (Screaming Frog Data)
 
-1. GA4 Analytics
-JSON
+SEO insights are derived from **real Screaming Frog crawl data** stored in **Google Sheets**.
 
+#### ♿ Accessibility SEO Agent (WCAG)
+
+- Reads the `accessibility_all` worksheet
+- Detects **WCAG 2.2 AA violations**
+- Computes:
+  - Violation counts
+  - Risk indicators
+- Produces **human-readable accessibility summaries**
+
+---
+
+#### 🌐 Response Codes SEO Agent
+
+- Reads the `response_codes_all` worksheet
+- Classifies URLs into:
+  - `200 OK`
+  - `3xx Redirects`
+  - `Blocked by robots.txt`
+  - `4xx / 5xx` errors
+- Evaluates:
+  - Crawl health
+  - Technical SEO risks
+
+---
+
+#### 🔍 Indexability SEO Agent
+
+- Reads the `internal_all` worksheet
+- Determines indexability using:
+  - Status codes
+  - Meta Robots
+  - X-Robots-Tag
+- Computes:
+  - Percentage of indexable pages
+  - Technical SEO health classification:
+    - **Good / Average / Poor**
+- Produces **derived SEO insights**, not raw counts
+
+---
+
+## 🏗️ System Architecture
+
+```
+POST /query
+   |
+   v
+Orchestrator
+   |
+   |-- GA4 Analytics Agent (if propertyId exists)
+   |
+   |-- Accessibility SEO Agent (WCAG)
+   |
+   |-- Response Codes SEO Agent
+   |
+   |-- Indexability SEO Agent
+```
+
+---
+
+## 📡 API Usage
+
+### 📊 GA4 Analytics Query
+
+```json
+POST /query
 {
   "query": "Give me active users in the last 7 days",
-  "propertyId": "YOUR_GA4_PROPERTY_ID"
+  "propertyId": "GA4_PROPERTY_ID"
 }
-2. SEO Health & Accessibility
-JSON
+```
 
+---
+
+### ♿ Accessibility SEO Query
+
+```json
+POST /query
 {
   "query": "Are there any WCAG 2.2 accessibility issues on the site?"
 }
-// OR
+```
+
+---
+
+### 🌐 Response Codes / Crawl Health Query
+
+```json
+POST /query
 {
   "query": "Analyze response codes and crawl health"
 }
-⚙️ Setup & Deployment (Evaluator Guide)
-This project is optimized for automated evaluation and strictly follows the hackathon execution requirements.
+```
 
-✅ Prerequisites
-Port: Application binds to 8080.
+---
 
-Credentials: A credentials.json (Google Service Account) must be placed in the root directory.
+### 🔍 Indexability SEO Query
 
-Structure: Ensure deploy.sh is in the root.
+```json
+POST /query
+{
+  "query": "Calculate the percentage of indexable pages and assess SEO health"
+}
+```
 
-🚀 One-Step Deployment
-Run the following command from the repository root:
+---
 
-Bash
+## ⚙️ Setup Instructions (Evaluator Ready)
 
+### ✅ Strict Execution Requirements
+
+- Server binds **only to port 8080**
+- `deploy.sh` exists at repository root
+- `credentials.json` exists at repository root  
+  _(Evaluators will replace this file during evaluation)_
+- Virtual environment created as `.venv`
+- Startup completes within **7 minutes**
+- No manual intervention required
+
+---
+
+### 🚀 One-Step Deployment
+
+From repository root:
+
+```bash
 bash deploy.sh
-The script creates a .venv, installs dependencies, and starts the server at http://localhost:8080.
+```
 
-🧪 Validation & Testing
-Standalone scripts are provided to validate individual agent logic (requires valid credentials):
+The server will start on:
 
-test_ga4.py — GA4 API connectivity.
+```
+http://localhost:8080
+```
 
-test_accessibility_agent.py — WCAG logic.
+---
 
-test_indexability_agent.py — SEO Health logic.
+## 🔐 Credentials Handling (Important)
 
-test_list_sheet.py — Google Sheets connectivity.
+- `credentials.json` **must be present at project root**
+- It contains a **Google Service Account**
+- Used for:
+  - GA4 authentication
+  - Google Sheets access
+- **Evaluators will replace this file with their own credentials**
 
-📄 Assumptions & Constraints
-Data Integrity: Assumes Screaming Frog sheets follow the standard export structure (internal_all, accessibility_all, etc.).
+---
 
-Security: Credentials are handled via Service Account; no manual OAuth flow required.
+## 🧪 Testing & Validation
 
-LLM Role: The LLM is used strictly for intent classification and query mapping, not for data generation.
+Standalone test scripts are included for development and validation:
 
-🎥 Demo Highlights
-Unified Endpoint: One API for both Analytics and SEO.
+- `test_ga4.py`
+- `test_accessibility_agent.py`
+- `test_response_codes_agent.py`
+- `test_indexability_agent.py`
+- `test_list_sheet.py`
 
-Deterministic Accuracy: Every insight is backed by raw crawl or API data.
+These tests:
 
-Orchestration: Seamless routing based on user intent.
+- Validate individual agents
+- Are **not auto-executed**
+- Require valid Google credentials
 
-👨‍💻 Author
-Harshit Shrivastava Participant - Spike AI BuildX Hackathon
+---
+
+## 📄 Assumptions & Limitations
+
+### Assumptions
+
+- GA4 property contains valid traffic data
+- Service account has access to GA4 and Google Sheets
+- Screaming Frog sheet structure remains consistent
+
+### Limitations
+
+- SEO intent routing is rule-based (LLM optional – Tier-3)
+- No write-back to GA4 or Google Sheets
+- Focus is on **analysis and insights**, not automated fixes
+
+---
+
+## 🎥 Demo (5–7 Minutes)
+
+The demo showcases:
+
+- Live GA4 analytics queries
+- SEO indexability analysis
+- Accessibility and crawl health insights
+- Orchestrator-based routing
+- Deterministic agent execution
+
+All demos are executed via `POST /query`.
+
+---
+
+## 🏁 Conclusion
+
+This project demonstrates:
+
+- Clean agent-based backend architecture
+- Safe and controlled LLM usage
+- Real GA4 analytics integration
+- Practical technical SEO intelligence
+- Production-aligned execution constraints
+
+Built specifically to meet and exceed the **Spike AI BuildX Hackathon** requirements.
+
+---
+
+## 🙌 Author
+
+**Harshit Shrivastava**  
+Spike AI BuildX Hackathon Participant
+
+```
+
+---
 ```
