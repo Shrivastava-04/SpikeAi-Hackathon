@@ -48,65 +48,90 @@ class Orchestrator:
         
         # SEO: Accessibility (WCAG)
 
-        if any(keyword in q for keyword in [ "accessibility", "wcag", "a11y"]):
-            try:
-                df = self.seo_agent.load_worksheet("accessibility_all")
-                results = self.seo_agent.analyze_wcag_violations(df)
-                explaination = self.seo_agent.explain_wcag_results(results)
+        # if any(keyword in q for keyword in [ "accessibility", "wcag", "a11y"]):
+        #     try:
+        #         df = self.seo_agent.load_worksheet("accessibility_all")
+        #         results = self.seo_agent.analyze_wcag_violations(df)
+        #         explaination = self.seo_agent.explain_wcag_results(results)
 
-                return {
-                    "agent": "SEOAgent",
-                    "results": results,
-                    "explaination": explaination
-                }
-            except Exception as e:
-                return {
-                    "error": "Failed to process SEO query.",
-                    "details": str(e)
-                }
+        #         return {
+        #             "agent": "SEOAgent",
+        #             "results": results,
+        #             "explaination": explaination
+        #         }
+        #     except Exception as e:
+        #         return {
+        #             "error": "Failed to process SEO query.",
+        #             "details": str(e)
+        #         }
 
-        # SEO: Response Codes / Crawl Health
+        # # SEO: Response Codes / Crawl Health
 
-        if any(k in q for k in ["status", "response", "crawl", "redirect", "4xx", "5xx"]):
-            try:
-                df = self.seo_agent.load_worksheet("response_codes_all")
-                results = self.seo_agent.analyze_response_codes(df)
-                explanation = self.seo_agent.explain_response_codes(results)
+        # if any(k in q for k in ["status", "response", "crawl", "redirect", "4xx", "5xx"]):
+        #     try:
+        #         df = self.seo_agent.load_worksheet("response_codes_all")
+        #         results = self.seo_agent.analyze_response_codes(df)
+        #         explanation = self.seo_agent.explain_response_codes(results)
 
-                return {
-                    "agent": "seo_response_codes",
-                    "results": results,
-                    "summary": explanation
-                }
-            except Exception as e:
-                return {
-                    "error": "Failed to process response codes SEO query",
-                    "details": str(e)
-                }
+        #         return {
+        #             "agent": "seo_response_codes",
+        #             "results": results,
+        #             "summary": explanation
+        #         }
+        #     except Exception as e:
+        #         return {
+        #             "error": "Failed to process response codes SEO query",
+        #             "details": str(e)
+        #         }
 
-        if any(k in q for k in ["indexable", "indexability", "technical seo", "seo health"]):
-            try:
-                df = self.seo_agent.load_worksheet("internal_all")
+        # if any(k in q for k in ["indexable", "indexability", "technical seo", "seo health"]):
+        #     try:
+        #         df = self.seo_agent.load_worksheet("internal_all")
+        #         results = self.seo_agent.analyze_indexability(df)
+        #         explanation = self.seo_agent.explain_indexability(results)
+
+        #         return {
+        #             "agent": "seo_indexability",
+        #             "results": results,
+        #             "summary": explanation
+        #         }
+        #     except Exception as e:
+        #         return {
+        #             "error": "Failed to process indexability SEO query",
+        #             "details": str(e)
+        #         }
+
+        try:
+            seo_plan = self.llm_client.generate_seo_plan(query)
+
+            df = self.seo_agent.load_worksheet(seo_plan.worksheet)
+
+            if seo_plan.analysis_type == "indexability":
                 results = self.seo_agent.analyze_indexability(df)
-                explanation = self.seo_agent.explain_indexability(results)
+                summary = self.seo_agent.explain_indexability(results)
 
-                return {
-                    "agent": "seo_indexability",
-                    "results": results,
-                    "summary": explanation
-                }
-            except Exception as e:
-                return {
-                    "error": "Failed to process indexability SEO query",
-                    "details": str(e)
-                }
+            elif seo_plan.analysis_type == "accessibility":
+                results = self.seo_agent.analyze_accessibility(df)
+                summary = self.seo_agent.explain_accessibility(results)
 
-        # ---------------------------
-        # Fallback
-        # ---------------------------
+            elif seo_plan.analysis_type == "response_codes":
+                results = self.seo_agent.analyze_response_codes(df)
+                summary = self.seo_agent.explain_response_codes(results)
+
+            return {
+                "agent": f"seo_{seo_plan.analysis_type}",
+                "results": results,
+                "summary": summary
+            }
+
+        except Exception as e:
+            return {
+                "error": "Failed to process SEO query",
+                "details": str(e)
+            }
         return {
             "error": "Unable to determine query intent",
             "hint": "Try asking about GA4 analytics, accessibility, or response codes"
         }
-    
+
 
