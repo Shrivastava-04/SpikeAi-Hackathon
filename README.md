@@ -164,6 +164,8 @@ POST /query
 - `deploy.sh` exists at repository root
 - `credentials.json` exists at repository root  
   _(Evaluators will replace this file during evaluation)_
+- **`.env` file exist at repository root with environment variable as given below** -`LLM_API_KEY` -`LLM_BASE_URL` -`SEO_AGENT_SHEET_ID` -`GA4_PROPERTY_ID`
+
 - Virtual environment created as `.venv`
 - Startup completes within **7 minutes**
 - No manual intervention required
@@ -188,6 +190,8 @@ http://localhost:8080
 
 ## 🔐 Credentials Handling (Important)
 
+- **environment variables must be there in `.env` file**
+- **The environment variable names are listed below:** -`LLM_API_KEY` -`LLM_BASE_URL` -`SEO_AGENT_SHEET_ID` -`GA4_PROPERTY_ID`
 - `credentials.json` **must be present at project root**
 - It contains a **Google Service Account**
 - Used for:
@@ -228,20 +232,6 @@ These tests:
 - SEO intent routing is rule-based (LLM optional – Tier-3)
 - No write-back to GA4 or Google Sheets
 - Focus is on **analysis and insights**, not automated fixes
-
----
-
-## 🎥 Demo (5–7 Minutes)
-
-The demo showcases:
-
-- Live GA4 analytics queries
-- SEO indexability analysis
-- Accessibility and crawl health insights
-- Orchestrator-based routing
-- Deterministic agent execution
-
-All demos are executed via `POST /query`.
 
 ---
 
